@@ -3,3 +3,9 @@
 # Generated on 2022-01-13T13:27:59Z by kres latest.
 
 _out
+
+# Sensitive configuration files
+MINIO_CONFIG_EXTRACTION.md
+minio-values-updated.yaml
+backup-key.txt
+cronjob.yaml
