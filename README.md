@@ -126,6 +126,52 @@ env:
     value: "age1khpnnl86pzx96ttyjmldptsl5yn2v9jgmmzcjcufvk00ttkph9zs0ytgec"
 ```
 
+## Container Image
+
+Before deploying, you need to build and make the talos-backup container image available to your cluster.
+
+### Option 1: Build and Push to Registry (Recommended for production)
+
+```bash
+# Build and push to your registry
+make REGISTRY=your-registry.com USERNAME=your-username PUSH=true TAG=latest image-talos-backup
+
+# Update cronjob.yaml with your registry
+# Change: registry.example.com/myusername/talos-backup:latest  
+# To:     your-registry.com/your-username/talos-backup:latest
+```
+
+### Option 2: Build and Load Locally (Single-node clusters)
+
+```bash
+# Build the image locally
+make image-talos-backup
+
+# For single-node Talos clusters, you can load directly:
+# First, save the image
+docker save ghcr.io/siderolabs/talos-backup:latest | gzip > talos-backup.tar.gz
+
+# Copy to node and load (adjust node IP)
+scp talos-backup.tar.gz root@10.0.0.2:/tmp/
+ssh root@10.0.0.2 'ctr -n k8s.io images import /tmp/talos-backup.tar.gz'
+
+# Update cronjob.yaml image reference:
+# Change: registry.example.com/myusername/talos-backup:latest
+# To:     ghcr.io/siderolabs/talos-backup:latest
+# And set: imagePullPolicy: Never
+```
+
+### Option 3: Use Existing Registry
+
+If you have access to a container registry:
+
+```bash
+# Build with custom registry
+make REGISTRY=ghcr.io USERNAME=yourusername PUSH=true TAG=v1.0.0 image-talos-backup
+
+# Update cronjob.yaml accordingly
+```
+
 ## Deployment
 
 1. **Customize the configuration**:
